@@ -80,7 +80,12 @@ interface Props { role: string; userName: string; userEmail: string; }
 
 export default function Sidebar({ role, userName, userEmail }: Props) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("sidebar-collapsed") === "true";
+    }
+    return false;
+  });
   const [openGroups, setOpenGroups] = useState<string[]>(["Reference Data"]);
 
   const nav: NavItem[] =
@@ -242,7 +247,7 @@ export default function Sidebar({ role, userName, userEmail }: Props) {
               </AnimatePresence>
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent side="top" align="start" className="w-48">
+          <DropdownMenuContent side="top" align="start" className="w-48 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
             <DropdownMenuItem asChild>
               <Link href="/dashboard/profile" className="flex items-center gap-2">
                 <User className="h-4 w-4" /> Profile
@@ -257,7 +262,11 @@ export default function Sidebar({ role, userName, userEmail }: Props) {
 
       {/* Collapse toggle */}
       <button
-        onClick={() => setCollapsed((v) => !v)}
+        onClick={() => setCollapsed((v) => {
+          const next = !v;
+          localStorage.setItem("sidebar-collapsed", String(next));
+          return next;
+        })}
         className="absolute -right-3 top-20 bg-brand-blue border border-white/20 rounded-full p-1 text-white hover:bg-brand-blue-light transition-colors z-10"
       >
         {collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}

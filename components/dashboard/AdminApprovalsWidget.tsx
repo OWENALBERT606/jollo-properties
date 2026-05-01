@@ -37,30 +37,30 @@ export default function AdminApprovalsWidget({ properties }: { properties: Prope
 
   return (
     <>
-      <div className="bg-white rounded-2xl border border-gray-100 p-5">
-        <h2 className="font-semibold text-gray-800 mb-4">Pending Approvals</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5">
+        <h2 className="font-semibold text-gray-800 dark:text-gray-100 mb-4">Pending Approvals</h2>
         {items.length === 0 ? (
           <div className="text-center py-8">
             <CheckCircle className="h-8 w-8 text-green-400 mx-auto mb-2" />
-            <p className="text-sm text-gray-400">All caught up!</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500">All caught up!</p>
           </div>
         ) : (
           <div className="space-y-3">
             {items.map((p) => (
-              <div key={p.id} className="flex items-center justify-between gap-3 p-3 bg-amber-50 rounded-xl">
+              <div key={p.id} className="flex items-center justify-between gap-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
                 <div className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4 text-amber-600" />
+                  <Building2 className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                   <div>
-                    <div className="text-sm font-medium text-gray-800 line-clamp-1">{p.title}</div>
-                    <div className="text-xs text-gray-400">{p.plotNumber} · {p.district}</div>
+                    <div className="text-sm font-medium text-gray-800 dark:text-gray-100 line-clamp-1">{p.title}</div>
+                    <div className="text-xs text-gray-400 dark:text-gray-500">{p.plotNumber} · {p.district}</div>
                   </div>
                 </div>
                 <div className="flex gap-1.5 shrink-0">
-                  <Button size="icon" variant="ghost" className="h-7 w-7 text-green-600 hover:bg-green-50"
+                  <Button size="icon" variant="ghost" className="h-7 w-7 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30"
                     onClick={() => setConfirm({ id: p.id, action: "approve" })}>
                     <CheckCircle className="h-4 w-4" />
                   </Button>
-                  <Button size="icon" variant="ghost" className="h-7 w-7 text-brand-red hover:bg-red-50"
+                  <Button size="icon" variant="ghost" className="h-7 w-7 text-brand-red hover:bg-red-50 dark:hover:bg-red-900/30"
                     onClick={() => setConfirm({ id: p.id, action: "reject" })}>
                     <XCircle className="h-4 w-4" />
                   </Button>

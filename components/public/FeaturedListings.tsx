@@ -11,19 +11,26 @@ const REGIONS: Record<string, string[]> = {
 
 async function getAllPublicProperties() {
   try {
-    return await db.property.findMany({
+    const rows = await db.property.findMany({
       where: { isPublicListing: true, status: "ACTIVE" },
       include: {
         documents: {
           where: { type: "PHOTO" },
-          select: { id: true, r2Url: true, name: true },
+          select: { id: true, r2Url: true, name: true, type: true },
           take: 5,
         },
       },
       orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
       take: 60,
     });
-  } catch {
+    // Convert Prisma Decimal → number so React can serialize to the client component
+    return rows.map((p) => ({
+      ...p,
+      price: p.price ? Number(p.price) : null,
+      size: Number(p.size),
+    }));
+  } catch (err) {
+    console.error("[FeaturedListings] failed to load properties:", err);
     return [];
   }
 }

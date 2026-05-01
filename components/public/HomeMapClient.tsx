@@ -24,11 +24,11 @@ interface Property {
 }
 
 const tenureColors: Record<string, string> = {
-  TITLED: "bg-green-100 text-green-700",
-  MAILO: "bg-blue-100 text-blue-700",
-  KIBANJA: "bg-amber-100 text-amber-700",
-  LEASEHOLD: "bg-purple-100 text-purple-700",
-  FREEHOLD: "bg-teal-100 text-teal-700",
+  TITLED: "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300",
+  MAILO: "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300",
+  KIBANJA: "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300",
+  LEASEHOLD: "bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300",
+  FREEHOLD: "bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300",
 };
 
 function formatUGX(amount: any) {
@@ -41,7 +41,7 @@ export default function HomeMapClient({ properties }: { properties: Property[] }
   const selectedProp = properties.find((p) => p.id === selectedId);
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-white dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section header */}
         <motion.div
@@ -52,17 +52,17 @@ export default function HomeMapClient({ properties }: { properties: Property[] }
         >
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <div className="bg-brand-blue-pale rounded-lg p-2">
+              <div className="bg-brand-blue-pale dark:bg-brand-blue/20 rounded-lg p-2">
                 <Map className="h-5 w-5 text-brand-blue" />
               </div>
               <span className="text-sm font-semibold text-brand-blue uppercase tracking-wide">
                 Explore by Map
               </span>
             </div>
-            <h2 className="text-3xl font-bold text-gray-900">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
               Find Properties Across Uganda
             </h2>
-            <p className="text-gray-500 mt-2 max-w-xl">
+            <p className="text-gray-500 dark:text-gray-400 mt-2 max-w-xl">
               Navigate the interactive map to discover properties in your preferred location.
               Click any pin to see details.
             </p>
@@ -125,35 +125,35 @@ export default function HomeMapClient({ properties }: { properties: Property[] }
                 </Button>
               </div>
             ) : (
-              <div className="bg-brand-blue-pale rounded-2xl p-5 text-center">
-                <Map className="h-8 w-8 text-brand-blue/40 mx-auto mb-2" />
-                <p className="text-sm text-gray-500">Click a pin on the map to see property details here</p>
+              <div className="bg-brand-blue-pale dark:bg-gray-800 rounded-2xl p-5 text-center">
+                <Map className="h-8 w-8 text-brand-blue/40 dark:text-brand-blue/30 mx-auto mb-2" />
+                <p className="text-sm text-gray-500 dark:text-gray-400">Click a pin on the map to see property details here</p>
               </div>
             )}
 
             {/* Scrollable property list */}
-            <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden flex-1">
-              <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-                <span className="text-sm font-semibold text-gray-700">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden flex-1">
+              <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">
                   {properties.length} Properties
                 </span>
-                <span className="text-xs text-gray-400">Click to locate</span>
+                <span className="text-xs text-gray-400 dark:text-gray-500">Click to locate</span>
               </div>
-              <div className="overflow-y-auto max-h-80 divide-y divide-gray-50">
+              <div className="overflow-y-auto max-h-80 divide-y divide-gray-50 dark:divide-gray-700">
                 {properties.map((p) => (
                   <button
                     key={p.id}
                     onClick={() => setSelectedId(p.id === selectedId ? null : p.id)}
-                    className={`w-full text-left px-4 py-3 hover:bg-brand-blue-pale transition-colors ${
-                      selectedId === p.id ? "bg-brand-blue-pale border-l-2 border-brand-blue" : ""
+                    className={`w-full text-left px-4 py-3 hover:bg-brand-blue-pale dark:hover:bg-gray-700 transition-colors ${
+                      selectedId === p.id ? "bg-brand-blue-pale dark:bg-gray-700 border-l-2 border-brand-blue" : ""
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-gray-800 truncate">{p.title}</div>
-                        <div className="text-xs text-gray-400 mt-0.5">{p.district}</div>
+                        <div className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">{p.title}</div>
+                        <div className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{p.district}</div>
                       </div>
-                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 ${tenureColors[p.tenure] || "bg-gray-100 text-gray-600"}`}>
+                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 ${tenureColors[p.tenure] || "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"}`}>
                         {p.tenure}
                       </span>
                     </div>
@@ -167,7 +167,7 @@ export default function HomeMapClient({ properties }: { properties: Property[] }
 
         {/* Tenure legend */}
         <div className="flex flex-wrap items-center gap-3 mt-6 justify-center">
-          <span className="text-xs text-gray-400 mr-1">Tenure:</span>
+          <span className="text-xs text-gray-400 dark:text-gray-500 mr-1">Tenure:</span>
           {Object.entries(tenureColors).map(([tenure, cls]) => (
             <span key={tenure} className={`text-xs font-semibold px-3 py-1 rounded-full ${cls}`}>
               {tenure}

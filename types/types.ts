@@ -47,6 +47,7 @@ export interface ListingProperty {
   price?: any;
   latitude?: number | null;
   longitude?: number | null;
+  documents?: { id: string; r2Url: string; name: string }[];
 }
 
 // types/types.ts

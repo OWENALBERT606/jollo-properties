@@ -12,7 +12,10 @@ export const metadata: Metadata = {
   },
 };
 
+export const dynamic = "force-dynamic";
+
 interface SearchParams {
+  q?: string;
   district?: string;
   type?: string;
   tenure?: string;
@@ -20,6 +23,7 @@ interface SearchParams {
   maxPrice?: string;
   sort?: string;
   cursor?: string;
+  [key: string]: string | undefined;
 }
 
 const PAGE_SIZE = 9;
@@ -27,25 +31,33 @@ const PAGE_SIZE = 9;
 export default async function ListingsPage({
   searchParams,
 }: {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 }) {
+  const sp = await searchParams;
   const where: any = { isPublicListing: true };
 
-  if (searchParams.district) where.district = searchParams.district;
-  if (searchParams.type && searchParams.type in PropertyType)
-    where.type = searchParams.type as PropertyType;
-  if (searchParams.tenure && searchParams.tenure in PropertyTenure)
-    where.tenure = searchParams.tenure as PropertyTenure;
-  if (searchParams.minPrice || searchParams.maxPrice) {
+  if (sp.q) {
+    where.OR = [
+      { title: { contains: sp.q, mode: "insensitive" } },
+      { plotNumber: { contains: sp.q, mode: "insensitive" } },
+      { district: { contains: sp.q, mode: "insensitive" } },
+      { address: { contains: sp.q, mode: "insensitive" } },
+      { subcounty: { contains: sp.q, mode: "insensitive" } },
+    ];
+  }
+  if (sp.district) where.district = sp.district;
+  if (sp.type && sp.type in PropertyType) where.type = sp.type as PropertyType;
+  if (sp.tenure && sp.tenure in PropertyTenure) where.tenure = sp.tenure as PropertyTenure;
+  if (sp.minPrice || sp.maxPrice) {
     where.price = {};
-    if (searchParams.minPrice) where.price.gte = Number(searchParams.minPrice);
-    if (searchParams.maxPrice) where.price.lte = Number(searchParams.maxPrice);
+    if (sp.minPrice) where.price.gte = Number(sp.minPrice);
+    if (sp.maxPrice) where.price.lte = Number(sp.maxPrice);
   }
 
   const orderBy: any =
-    searchParams.sort === "price_asc"
+    sp.sort === "price_asc"
       ? { price: "asc" }
-      : searchParams.sort === "price_desc"
+      : sp.sort === "price_desc"
       ? { price: "desc" }
       : { createdAt: "desc" };
 
@@ -74,27 +86,39 @@ export default async function ListingsPage({
         price: true,
         latitude: true,
         longitude: true,
+        documents: {
+          where: { type: "PHOTO" },
+          select: { id: true, r2Url: true, name: true, type: true },
+          take: 3,
+        },
       },
     };
-    if (searchParams.cursor) {
-      query.cursor = { id: searchParams.cursor };
+    if (sp.cursor) {
+      query.cursor = { id: sp.cursor };
       query.skip = 1;
     }
     const results = await db.property.findMany(query);
-    if (results.length > PAGE_SIZE) {
-      nextCursor = results[PAGE_SIZE].id;
-      properties = results.slice(0, PAGE_SIZE);
+    // Convert Prisma Decimal → number for client serialization
+    const mapped = results.map((p: any) => ({
+      ...p,
+      price: p.price ? Number(p.price) : null,
+      size: Number(p.size),
+    }));
+    if (mapped.length > PAGE_SIZE) {
+      nextCursor = mapped[PAGE_SIZE].id;
+      properties = mapped.slice(0, PAGE_SIZE);
     } else {
-      properties = results;
+      properties = mapped;
     }
-  } catch {
+  } catch (err) {
+    console.error("[ListingsPage] query failed:", err);
     properties = [];
   }
 
   let mapProperties: any[] = [];
-  if (!searchParams.cursor) {
+  if (!sp.cursor) {
     try {
-      const hasFilters = searchParams.district || searchParams.type || searchParams.tenure || searchParams.minPrice || searchParams.maxPrice;
+      const hasFilters = sp.q || sp.district || sp.type || sp.tenure || sp.minPrice || sp.maxPrice;
       const mapWhere = hasFilters ? where : { isPublicListing: true, latitude: { not: null }, longitude: { not: null } };
       const rawMap = await db.property.findMany({
         where: mapWhere,
@@ -128,7 +152,7 @@ export default async function ListingsPage({
     <ListingsClient
       initialProperties={properties}
       nextCursor={nextCursor}
-      searchParams={searchParams}
+      searchParams={sp}
       showSampleProperties={false}
       mapProperties={mapProperties}
     />

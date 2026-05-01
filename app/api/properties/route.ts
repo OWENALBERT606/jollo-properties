@@ -128,6 +128,13 @@ export async function GET(req: NextRequest) {
       latitude: true,
       longitude: true,
     },
+    include: {
+      documents: {
+        where: { type: "PHOTO" },
+        select: { id: true, r2Url: true, name: true },
+        take: 3,
+      },
+    },
   };
   if (cursor) {
     query.cursor = { id: cursor };

@@ -15,11 +15,11 @@ interface Props {
 }
 
 const tenureColor: Record<string, string> = {
-  TITLED: "bg-green-100 text-green-700",
-  MAILO: "bg-blue-100 text-blue-700",
-  KIBANJA: "bg-amber-100 text-amber-700",
-  LEASEHOLD: "bg-purple-100 text-purple-700",
-  FREEHOLD: "bg-teal-100 text-teal-700",
+  TITLED: "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300",
+  MAILO: "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300",
+  KIBANJA: "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300",
+  LEASEHOLD: "bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300",
+  FREEHOLD: "bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300",
 };
 
 export default function PropertyImageGallery({ photos, title, district, tenure }: Props) {
@@ -33,7 +33,7 @@ export default function PropertyImageGallery({ photos, title, district, tenure }
 
   return (
     <>
-      <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700">
         {/* Main image */}
         <div className="relative h-72 sm:h-96 bg-gradient-to-br from-brand-blue via-[#1a3580] to-[#0f2060] overflow-hidden group">
           {hasPhotos ? (
@@ -122,7 +122,7 @@ export default function PropertyImageGallery({ photos, title, district, tenure }
 
         {/* Thumbnail strip */}
         {photos.length > 1 && (
-          <div className="flex gap-2 p-3 overflow-x-auto scrollbar-hide bg-gray-50">
+          <div className="flex gap-2 p-3 overflow-x-auto scrollbar-hide bg-gray-50 dark:bg-gray-900">
             {photos.map((p, i) => (
               <button
                 key={p.id}

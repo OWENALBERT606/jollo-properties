@@ -75,15 +75,15 @@ export default function RegisterForm() {
 
   /* ── shared input class ── */
   const inputCls = (hasError?: boolean) =>
-    `h-11 bg-slate-50 border text-sm rounded-xl px-3.5 focus-visible:ring-2 focus-visible:ring-blue-800/30 focus-visible:border-blue-800 transition-colors ${
-      hasError ? "border-red-500 bg-red-50" : "border-slate-200"
+    `h-11 bg-slate-50 dark:bg-slate-800 border text-sm rounded-xl px-3.5 focus-visible:ring-2 focus-visible:ring-blue-800/30 focus-visible:border-blue-800 transition-colors text-slate-900 dark:text-slate-100 ${
+      hasError ? "border-red-500 bg-red-50 dark:bg-red-900/20" : "border-slate-200 dark:border-slate-700"
     }`;
 
   return (
     <div className="min-h-screen flex font-sans">
 
       {/* ── LEFT — form panel ── */}
-      <div className="flex-1 flex items-center justify-center px-6 py-10 bg-white relative overflow-hidden">
+      <div className="flex-1 flex items-center justify-center px-6 py-10 bg-white dark:bg-gray-900 relative overflow-hidden">
 
         {/* Subtle background geometry */}
         <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-blue-800/[.03] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
@@ -103,11 +103,11 @@ export default function RegisterForm() {
 
           {/* Heading */}
           <div className="mb-8">
-            <h1 className="text-[2rem] font-extrabold text-slate-900 leading-tight tracking-tight">
+            <h1 className="text-[2rem] font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight">
               Create your<br />
-              <span className="text-blue-800">free account</span>
+              <span className="text-blue-800 dark:text-blue-400">free account</span>
             </h1>
-            <p className="text-slate-500 text-sm mt-2">
+            <p className="text-slate-500 dark:text-slate-400 text-sm mt-2">
               Join thousands of Ugandans managing land securely.
             </p>
           </div>
@@ -117,7 +117,7 @@ export default function RegisterForm() {
 
             {/* Full Name */}
             <div className="space-y-1.5">
-              <Label htmlFor="name" className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+              <Label htmlFor="name" className="text-[11px] font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">
                 Full Name
               </Label>
               <Input
@@ -136,7 +136,7 @@ export default function RegisterForm() {
 
             {/* Email */}
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+              <Label htmlFor="email" className="text-[11px] font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">
                 Email Address
               </Label>
               <Input
@@ -156,9 +156,9 @@ export default function RegisterForm() {
 
             {/* Phone */}
             <div className="space-y-1.5">
-              <Label htmlFor="phone" className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+              <Label htmlFor="phone" className="text-[11px] font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">
                 Phone{" "}
-                <span className="normal-case text-slate-400 font-normal tracking-normal">(optional)</span>
+                <span className="normal-case text-slate-400 dark:text-slate-500 font-normal tracking-normal">(optional)</span>
               </Label>
               <Input
                 id="phone"
@@ -172,7 +172,7 @@ export default function RegisterForm() {
             {/* Password row */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label htmlFor="password" className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+                <Label htmlFor="password" className="text-[11px] font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">
                   Password
                 </Label>
                 <div className="relative">
@@ -186,7 +186,7 @@ export default function RegisterForm() {
                   <button
                     type="button"
                     onClick={() => setShowPass(v => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-800 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 hover:text-blue-800 transition-colors"
                   >
                     {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -200,7 +200,7 @@ export default function RegisterForm() {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="confirmPassword" className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+                <Label htmlFor="confirmPassword" className="text-[11px] font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">
                   Confirm
                 </Label>
                 <div className="relative">
@@ -214,7 +214,7 @@ export default function RegisterForm() {
                   <button
                     type="button"
                     onClick={() => setShowConfirm(v => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-800 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 hover:text-blue-800 transition-colors"
                   >
                     {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -255,12 +255,12 @@ export default function RegisterForm() {
 
           {/* Divider + sign in link */}
           <div className="flex items-center gap-3 my-5">
-            <div className="flex-1 h-px bg-slate-100" />
-            <span className="text-[11px] text-slate-400 uppercase tracking-widest">or</span>
-            <div className="flex-1 h-px bg-slate-100" />
+            <div className="flex-1 h-px bg-slate-100 dark:bg-slate-700" />
+            <span className="text-[11px] text-slate-400 dark:text-slate-500 uppercase tracking-widest">or</span>
+            <div className="flex-1 h-px bg-slate-100 dark:bg-slate-700" />
           </div>
 
-          <p className="text-center text-sm text-slate-500">
+          <p className="text-center text-sm text-slate-500 dark:text-slate-400">
             Already have an account?{" "}
             <Link href="/login" className="text-blue-800 font-semibold hover:text-red-600 transition-colors">
               Sign in →

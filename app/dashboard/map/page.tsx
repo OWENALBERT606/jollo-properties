@@ -2,9 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/config/auth";
 import { redirect } from "next/navigation";
 import { db } from "@/prisma/db";
-import dynamic from "next/dynamic";
-
-const PropertiesMap = dynamic(() => import("@/components/shared/PropertiesMap"), { ssr: false });
+import MapClient from "./MapClient";
 
 export default async function MapPage() {
   const session = await getServerSession(authOptions);
@@ -28,7 +26,7 @@ export default async function MapPage() {
         <p className="text-sm text-gray-500 mt-0.5">{properties.length} properties with location data</p>
       </div>
       <div className="h-[calc(100vh-180px)] rounded-2xl overflow-hidden border border-gray-200 shadow-sm">
-        <PropertiesMap properties={properties} />
+        <MapClient properties={properties} />
       </div>
     </div>
   );

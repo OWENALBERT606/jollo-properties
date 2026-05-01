@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Building2, Menu, X, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/mode-toggle";
 import { cn } from "@/lib/utils";
 import { signOut, useSession } from "next-auth/react";
 
@@ -37,7 +38,7 @@ export default function Navbar() {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         scrolled
-          ? "bg-white/95 backdrop-blur-md shadow-sm"
+          ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-sm"
           : "bg-transparent"
       )}
     >
@@ -68,7 +69,7 @@ export default function Navbar() {
                     "px-4 py-2 rounded-md text-sm font-medium transition-colors",
                     pathname === link.href
                       ? "text-brand-blue bg-brand-blue-pale"
-                      : "text-gray-600 hover:text-brand-blue hover:bg-brand-blue-pale"
+                      : "text-gray-600 dark:text-gray-300 hover:text-brand-blue hover:bg-brand-blue-pale dark:hover:bg-gray-800"
                   )}
                 >
                   {link.label}
@@ -79,6 +80,7 @@ export default function Navbar() {
 
           {/* CTA buttons */}
           <div className="hidden md:flex items-center gap-2">
+            <ModeToggle />
             {user ? (
               <div className="relative">
                 <button
@@ -89,17 +91,17 @@ export default function Navbar() {
                   <span>{user.name || user.email}</span>
                 </button>
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 py-1 z-50">
                     <Link
                       href="/dashboard"
                       onClick={() => setUserMenuOpen(false)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
                     >
                       Dashboard
                     </Link>
                     <button
                       onClick={() => signOut({ callbackUrl: "/" })}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-50"
+                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-50 dark:hover:bg-gray-700"
                     >
                       <LogOut className="h-4 w-4" />
                       Logout
@@ -128,14 +130,17 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile hamburger */}
-          <button
-            className="md:hidden p-2 rounded-md text-brand-blue"
-            onClick={() => setMobileOpen((v) => !v)}
-            aria-label="Toggle menu"
-          >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          {/* Mobile: theme toggle + hamburger */}
+          <div className="md:hidden flex items-center gap-1">
+            <ModeToggle />
+            <button
+              className="p-2 rounded-md text-brand-blue"
+              onClick={() => setMobileOpen((v) => !v)}
+              aria-label="Toggle menu"
+            >
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -147,7 +152,7 @@ export default function Navbar() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "tween", duration: 0.25 }}
-            className="fixed inset-0 top-16 bg-white z-40 p-6 flex flex-col gap-4 md:hidden"
+            className="fixed inset-0 top-16 bg-white dark:bg-gray-900 z-40 p-6 flex flex-col gap-4 md:hidden"
           >
             {links.map((link, i) => (
               <motion.div
@@ -163,7 +168,7 @@ export default function Navbar() {
                     "block px-4 py-3 rounded-lg text-base font-medium",
                     pathname === link.href
                       ? "bg-brand-blue-pale text-brand-blue"
-                      : "text-gray-700 hover:bg-brand-blue-pale hover:text-brand-blue"
+                      : "text-gray-700 dark:text-gray-200 hover:bg-brand-blue-pale dark:hover:bg-gray-800 hover:text-brand-blue"
                   )}
                 >
                   {link.label}
@@ -173,13 +178,13 @@ export default function Navbar() {
             <div className="flex flex-col gap-2 mt-4">
               {user ? (
                 <>
-                  <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                     <div className="bg-brand-blue rounded-full w-10 h-10 flex items-center justify-center text-white font-bold">
                       {(user.name || user.email || "U")[0].toUpperCase()}
                     </div>
                     <div>
-                      <div className="text-sm font-semibold text-gray-800">{user.name || user.email}</div>
-                      <div className="text-xs text-gray-500">{user.email}</div>
+                      <div className="text-sm font-semibold text-gray-800 dark:text-gray-100">{user.name || user.email}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{user.email}</div>
                     </div>
                   </div>
                   <Button asChild variant="outline" onClick={() => { setMobileOpen(false); router.push("/dashboard"); }}>

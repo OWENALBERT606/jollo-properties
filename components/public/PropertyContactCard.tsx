@@ -81,7 +81,7 @@ Please contact me.`;
       </button>
       <button
         onClick={handleBookVisit}
-        className="w-full bg-white text-brand-blue hover:bg-blue-50 font-semibold flex items-center justify-center gap-2 py-2.5 rounded-lg"
+        className="w-full bg-white dark:bg-gray-800 text-brand-blue hover:bg-blue-50 dark:hover:bg-gray-700 font-semibold flex items-center justify-center gap-2 py-2.5 rounded-lg"
       >
         <Calendar className="h-4 w-4" /> Book Visit
       </button>

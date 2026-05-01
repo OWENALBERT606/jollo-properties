@@ -36,8 +36,8 @@ const slides = [
   },
 ];
 
-const districts = ["Kampala","Wakiso","Mukono","Jinja","Entebbe","Gulu","Mbarara","Mbale","Lira","Masaka"];
-const propertyTypes = ["Land","House","Residential","Commercial","Agricultural","Industrial","Other"];
+const districts = ["Kampala","Wakiso","Mukono","Jinja","Entebbe","Gulu","Mbarara","Mbale","Lira","Masaka","Mubende","Mityana","Mpigi","Butebo","Hoima","Masindi","Fort Portal","Kasese","Kabale","Bushenyi","Ntungamo","Ibanda","Soroti","Kumi","Tororo","Busia","Iganga","Bugiri","Kamuli","Kayunga"];
+const propertyTypes = ["Land","House","Residential","Commercial","Agricultural","Industrial","Mixed Use","Other"];
 const tenures = ["Titled","Mailo","Kibanja","Leasehold","Freehold"];
 
 const INTERVAL = 5000;
@@ -45,9 +45,12 @@ const INTERVAL = 5000;
 export default function HeroSection() {
   const router = useRouter();
   const [current, setCurrent] = useState(0);
+  const [keyword, setKeyword] = useState("");
   const [district, setDistrict] = useState("");
   const [type, setType] = useState("");
   const [tenure, setTenure] = useState("");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
   const [paused, setPaused] = useState(false);
 
   const next = useCallback(() => setCurrent((i) => (i + 1) % slides.length), []);
@@ -62,9 +65,12 @@ export default function HeroSection() {
 
   function handleSearch() {
     const params = new URLSearchParams();
+    if (keyword.trim()) params.set("q", keyword.trim());
     if (district) params.set("district", district);
     if (type) params.set("type", type.toUpperCase().replace(/ /g, "_"));
     if (tenure) params.set("tenure", tenure.toUpperCase());
+    if (minPrice) params.set("minPrice", minPrice);
+    if (maxPrice) params.set("maxPrice", maxPrice);
     router.push(`/listings?${params.toString()}`);
   }
 
@@ -214,45 +220,87 @@ export default function HeroSection() {
           </motion.p>
         </motion.div>
 
-        {/* ── Search bar ── */}
+        {/* ── Search card ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.5 }}
-          className="bg-white/95 backdrop-blur-md rounded-2xl p-4 shadow-2xl max-w-4xl mx-auto border border-white/50"
+          className="bg-white/95 backdrop-blur-md rounded-2xl p-5 shadow-2xl max-w-5xl mx-auto border border-white/50"
         >
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+          {/* Primary keyword row */}
+          <div className="flex flex-col sm:flex-row gap-3 mb-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search by title, plot number, address..."
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-blue bg-gray-50"
+              />
+            </div>
+            <Button
+              onClick={handleSearch}
+              className="bg-brand-red hover:bg-red-700 text-white rounded-xl px-7 py-3 font-semibold flex items-center justify-center gap-2 shadow-lg whitespace-nowrap"
+            >
+              <Search className="h-4 w-4" />
+              Search Properties
+            </Button>
+          </div>
+
+          {/* Filter row */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             <select
               value={district}
               onChange={(e) => setDistrict(e.target.value)}
-              className="px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-blue bg-gray-50"
+              className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-blue bg-gray-50 cursor-pointer"
             >
               <option value="">All Districts</option>
               {districts.map((d) => <option key={d} value={d}>{d}</option>)}
             </select>
+
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
-              className="px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-blue bg-gray-50"
+              className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-blue bg-gray-50 cursor-pointer"
             >
               <option value="">Property Type</option>
               {propertyTypes.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
+
             <select
               value={tenure}
               onChange={(e) => setTenure(e.target.value)}
-              className="px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-blue bg-gray-50"
+              className="px-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-blue bg-gray-50 cursor-pointer"
             >
               <option value="">Tenure Type</option>
               {tenures.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
-            <Button
-              onClick={handleSearch}
-              className="bg-brand-red hover:bg-red-700 text-white rounded-xl py-3 font-semibold flex items-center justify-center gap-2 shadow-lg"
-            >
-              <Search className="h-4 w-4" />
-              Search
-            </Button>
+
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-gray-400 pointer-events-none">UGX</span>
+              <input
+                type="number"
+                min={0}
+                placeholder="Min Price"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+                className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-blue bg-gray-50"
+              />
+            </div>
+
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-gray-400 pointer-events-none">UGX</span>
+              <input
+                type="number"
+                min={0}
+                placeholder="Max Price"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-brand-blue bg-gray-50"
+              />
+            </div>
           </div>
         </motion.div>
 

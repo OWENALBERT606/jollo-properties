@@ -52,14 +52,14 @@ export default function StatsCard({
   const Icon = ICONS[iconName] ?? Building2;
 
   return (
-    <div ref={ref} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+    <div ref={ref} className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-sm text-gray-500">{label}</span>
+        <span className="text-sm text-gray-500 dark:text-gray-400">{label}</span>
         <div className={cn("p-2 rounded-lg", color)}>
           <Icon className="h-4 w-4" />
         </div>
       </div>
-      <div className="text-2xl font-bold text-gray-900">
+      <div className="text-2xl font-bold text-gray-900 dark:text-white">
         {prefix}{count.toLocaleString()}{suffix}
       </div>
     </div>

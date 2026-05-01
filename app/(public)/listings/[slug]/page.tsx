@@ -15,14 +15,17 @@ import PropertyImageGallery from "@/components/public/PropertyImageGallery";
 import PropertyContactCard from "@/components/public/PropertyContactCard";
 import PropertyMap from "@/components/shared/PropertyMap";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
+  const { slug } = await params;
   try {
     const property = await db.property.findUnique({
-      where: { plotNumber: params.slug },
+      where: { plotNumber: slug },
     });
     if (!property) return { title: "Property Not Found | Demo Properties" };
     return {
@@ -78,12 +81,13 @@ function formatUGX(amount: any) {
 export default async function PropertyDetailPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
+  const { slug } = await params;
   let property: any;
   try {
     property = await db.property.findUnique({
-      where: { plotNumber: params.slug },
+      where: { plotNumber: slug },
       include: {
         owners: {
           where: { isActive: true },

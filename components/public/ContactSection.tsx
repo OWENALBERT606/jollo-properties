@@ -70,7 +70,7 @@ export default function ContactSection() {
   }
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-24 bg-white dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -79,11 +79,11 @@ export default function ContactSection() {
           viewport={{ once: true }}
           className="text-center mb-14"
         >
-          <span className="inline-block bg-brand-red-light text-brand-red text-sm font-semibold px-4 py-1.5 rounded-full mb-4">
+          <span className="inline-flex items-center gap-1.5 bg-brand-blue-pale text-brand-blue text-xs font-semibold px-3 py-1 rounded-full mb-3">
             Get In Touch
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Contact Us</h2>
-          <p className="text-gray-500 mt-3 max-w-xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Contact <span className="text-brand-red">Us</span></h2>
+          <p className="text-gray-500 dark:text-gray-400 mt-3 max-w-xl mx-auto">
             Have a question about a property or need help with land registration?
             Our team is ready to assist you.
           </p>
@@ -96,24 +96,27 @@ export default function ContactSection() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="lg:col-span-2 space-y-5"
+            className="lg:col-span-2 space-y-4"
           >
             {contacts.map(({ icon: Icon, label, value, color }) => (
-              <div key={label} className="flex items-start gap-4">
+              <div
+                key={label}
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center gap-4 border border-gray-100 dark:border-gray-700 hover:shadow-md hover:border-brand-blue/20 transition-all duration-200"
+              >
                 <div className={`rounded-xl p-3 shrink-0 ${color}`}>
                   <Icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <div className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-0.5">
+                  <div className="text-xs text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wide mb-0.5">
                     {label}
                   </div>
-                  <div className="text-gray-800 font-medium text-sm">{value}</div>
+                  <div className="text-gray-800 dark:text-gray-200 font-medium text-sm">{value}</div>
                 </div>
               </div>
             ))}
 
             {/* Map embed placeholder */}
-            <div className="mt-6 rounded-2xl overflow-hidden border border-gray-100 h-52">
+            <div className="mt-2 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 h-52">
               <OfficeMap lat={0.3394} lng={32.6394} title="Demo Properties — Kireka Shopping Centre" />
             </div>
           </motion.div>
@@ -124,80 +127,85 @@ export default function ContactSection() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="lg:col-span-3 bg-gray-50 rounded-3xl p-8 border border-gray-100"
+            className="lg:col-span-3 bg-white dark:bg-gray-800 rounded-3xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm"
           >
-            <h3 className="text-xl font-bold text-gray-900 mb-6">Send Us a Message</h3>
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <Label htmlFor="name">Full Name *</Label>
-                  <Input
-                    id="name"
-                    placeholder="John Doe"
-                    {...register("name")}
-                    className={errors.name ? "border-brand-red" : "bg-white"}
-                  />
-                  {errors.name && <p className="text-xs text-brand-red">{errors.name.message}</p>}
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="email">Email *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    {...register("email")}
-                    className={errors.email ? "border-brand-red" : "bg-white"}
-                  />
-                  {errors.email && <p className="text-xs text-brand-red">{errors.email.message}</p>}
-                </div>
-              </div>
+            {/* Gradient top strip */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-brand-blue to-brand-blue-light" />
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <Label htmlFor="phone">Phone (optional)</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    placeholder="+256 700 000000"
-                    {...register("phone")}
-                    className="bg-white"
-                  />
+            <div className="p-8">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Send Us a Message</h3>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <Label htmlFor="name">Full Name *</Label>
+                    <Input
+                      id="name"
+                      placeholder="John Doe"
+                      {...register("name")}
+                      className={errors.name ? "border-brand-red" : "bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"}
+                    />
+                    {errors.name && <p className="text-xs text-brand-red">{errors.name.message}</p>}
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="email">Email *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="you@example.com"
+                      {...register("email")}
+                      className={errors.email ? "border-brand-red" : "bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"}
+                    />
+                    {errors.email && <p className="text-xs text-brand-red">{errors.email.message}</p>}
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <Label htmlFor="subject">Subject *</Label>
-                  <Input
-                    id="subject"
-                    placeholder="e.g. Property Inquiry"
-                    {...register("subject")}
-                    className={errors.subject ? "border-brand-red" : "bg-white"}
-                  />
-                  {errors.subject && <p className="text-xs text-brand-red">{errors.subject.message}</p>}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <Label htmlFor="phone">Phone (optional)</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+256 700 000000"
+                      {...register("phone")}
+                      className="bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="subject">Subject *</Label>
+                    <Input
+                      id="subject"
+                      placeholder="e.g. Property Inquiry"
+                      {...register("subject")}
+                      className={errors.subject ? "border-brand-red" : "bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"}
+                    />
+                    {errors.subject && <p className="text-xs text-brand-red">{errors.subject.message}</p>}
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-1">
-                <Label htmlFor="message">Message *</Label>
-                <Textarea
-                  id="message"
-                  rows={5}
-                  placeholder="Tell us how we can help you..."
-                  {...register("message")}
-                  className={`resize-none ${errors.message ? "border-brand-red" : "bg-white"}`}
-                />
-                {errors.message && <p className="text-xs text-brand-red">{errors.message.message}</p>}
-              </div>
+                <div className="space-y-1">
+                  <Label htmlFor="message">Message *</Label>
+                  <Textarea
+                    id="message"
+                    rows={5}
+                    placeholder="Tell us how we can help you..."
+                    {...register("message")}
+                    className={`resize-none ${errors.message ? "border-brand-red" : "bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"}`}
+                  />
+                  {errors.message && <p className="text-xs text-brand-red">{errors.message.message}</p>}
+                </div>
 
-              <Button
-                onClick={handleSubmit(onSubmit)}
-                disabled={loading}
-                className="w-full bg-brand-red hover:bg-red-700 text-white h-12 text-base font-semibold flex items-center gap-2"
-              >
-                {loading ? (
-                  <><Loader2 className="h-5 w-5 animate-spin" /> Sending...</>
-                ) : (
-                  <><Send className="h-5 w-5" /> Send Message</>
-                )}
-              </Button>
+                <Button
+                  onClick={handleSubmit(onSubmit)}
+                  disabled={loading}
+                  className="w-full bg-gradient-to-r from-brand-blue to-brand-blue-light hover:from-brand-blue-light hover:to-brand-blue text-white h-12 text-base font-semibold flex items-center gap-2 shadow-md shadow-brand-blue/20 transition-all duration-300"
+                >
+                  {loading ? (
+                    <><Loader2 className="h-5 w-5 animate-spin" /> Sending...</>
+                  ) : (
+                    <><Send className="h-5 w-5" /> Send Message</>
+                  )}
+                </Button>
+              </div>
             </div>
           </motion.div>
         </div>

@@ -2,17 +2,17 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Maximize2, Tag, ArrowRight, ChevronLeft, ChevronRight, Images } from "lucide-react";
+import { MapPin, Maximize2, Tag, ArrowUpRight, ChevronLeft, ChevronRight, Images } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 
 const tenureBadge: Record<string, string> = {
-  TITLED: "bg-green-100 text-green-700",
-  MAILO: "bg-blue-100 text-blue-700",
-  KIBANJA: "bg-amber-100 text-amber-700",
-  LEASEHOLD: "bg-purple-100 text-purple-700",
-  FREEHOLD: "bg-teal-100 text-teal-700",
+  TITLED: "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300",
+  MAILO: "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300",
+  KIBANJA: "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300",
+  LEASEHOLD: "bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300",
+  FREEHOLD: "bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300",
 };
 
 const tenureBg: Record<string, string> = {
@@ -21,6 +21,14 @@ const tenureBg: Record<string, string> = {
   KIBANJA: "from-amber-800 to-amber-600",
   LEASEHOLD: "from-purple-900 to-purple-700",
   FREEHOLD: "from-teal-900 to-teal-700",
+};
+
+const tenureAccent: Record<string, string> = {
+  TITLED: "border-l-green-500",
+  MAILO: "border-l-brand-blue",
+  KIBANJA: "border-l-amber-500",
+  LEASEHOLD: "border-l-purple-500",
+  FREEHOLD: "border-l-teal-500",
 };
 
 function formatUGX(amount: any) {
@@ -54,6 +62,8 @@ export default function PropertyCardSlider({ property, index = 0 }: Props) {
   }
 
   const bg = tenureBg[property.tenure] || "from-brand-blue to-[#1a3580]";
+  const accentBorder = tenureAccent[property.tenure] || "border-l-brand-blue";
+  const hasPhotos = photos.length > 0;
 
   return (
     <motion.div
@@ -62,12 +72,12 @@ export default function PropertyCardSlider({ property, index = 0 }: Props) {
       viewport={{ once: true }}
       transition={{ delay: index * 0.05 }}
       whileHover={{ y: -3, boxShadow: "0 16px 40px rgba(27,63,160,0.13)" }}
-      className="bg-white rounded-2xl overflow-hidden border border-gray-100 group flex flex-col"
+      className={`bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 group flex flex-col transition-all duration-300 ${!hasPhotos ? `border-l-4 ${accentBorder}` : ""}`}
     >
-      {/* ── Image slider ── */}
-      <div className="relative h-44 overflow-hidden">
+      {/* Image slider */}
+      <div className="relative h-44 overflow-hidden rounded-t-2xl">
         <AnimatePresence mode="wait" initial={false}>
-          {photos.length > 0 ? (
+          {hasPhotos ? (
             <motion.div
               key={imgIdx}
               initial={{ opacity: 0, x: 20 }}
@@ -126,15 +136,15 @@ export default function PropertyCardSlider({ property, index = 0 }: Props) {
         )}
 
         {/* Photo count badge */}
-        {photos.length > 0 && (
-          <div className="absolute top-2 right-2 z-10 bg-black/40 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+        {hasPhotos && (
+          <div className="absolute top-2 right-2 z-10 bg-black/40 backdrop-blur-sm text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
             <Images className="h-3 w-3" /> {photos.length}
           </div>
         )}
 
         {/* Tenure badge */}
         <div className="absolute top-2 left-2 z-10">
-          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${tenureBadge[property.tenure] || "bg-gray-100 text-gray-600"}`}>
+          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full backdrop-blur-sm ${tenureBadge[property.tenure] || "bg-gray-100 text-gray-600"}`}>
             {property.tenure}
           </span>
         </div>
@@ -142,27 +152,27 @@ export default function PropertyCardSlider({ property, index = 0 }: Props) {
         {/* Hover CTA */}
         <Link href={`/listings/${property.plotNumber}`} className="absolute inset-0 z-[5]">
           <div className="absolute bottom-3 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 whitespace-nowrap">
-            <span className="bg-white text-brand-blue text-xs font-semibold px-4 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
-              View Details <ArrowRight className="h-3 w-3" />
+            <span className="bg-white dark:bg-gray-900 text-brand-blue dark:text-brand-blue-light text-xs font-semibold px-4 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
+              View Details <ArrowUpRight className="h-3 w-3" />
             </span>
           </div>
         </Link>
       </div>
 
-      {/* ── Content ── */}
+      {/* Content */}
       <div className="p-3 flex flex-col flex-1">
         <Link href={`/listings/${property.plotNumber}`}>
-          <h3 className="font-semibold text-gray-900 text-sm line-clamp-1 hover:text-brand-blue transition-colors leading-snug">
+          <h3 className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-1 hover:text-brand-blue transition-colors leading-snug">
             {property.title}
           </h3>
         </Link>
 
-        <div className="flex items-center gap-1 text-gray-400 text-xs mt-1">
+        <div className="flex items-center gap-1 text-gray-400 dark:text-gray-500 text-xs mt-1">
           <MapPin className="h-3 w-3 shrink-0" />
           <span className="truncate">{[property.subcounty, property.district].filter(Boolean).join(", ")}</span>
         </div>
 
-        <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
+        <div className="flex items-center gap-3 mt-2 text-xs text-gray-500 dark:text-gray-400">
           <span className="flex items-center gap-1">
             <Maximize2 className="h-3 w-3" />
             {Number(property.size)} {property.sizeUnit}
@@ -173,11 +183,14 @@ export default function PropertyCardSlider({ property, index = 0 }: Props) {
           </span>
         </div>
 
-        <div className="flex items-center justify-between pt-2.5 border-t border-gray-50 mt-auto">
-          <span className="font-bold text-brand-blue text-sm">{formatUGX(property.price)}</span>
-          <Button asChild size="sm" className="bg-brand-red hover:bg-red-700 text-white text-xs h-7 px-3 rounded-lg">
-            <Link href={`/listings/${property.plotNumber}`}>View</Link>
-          </Button>
+        <div className="flex items-center justify-between pt-2.5 border-t border-gray-50 dark:border-gray-700 mt-auto">
+          <span className="font-extrabold text-brand-blue dark:text-brand-blue-light text-sm">{formatUGX(property.price)}</span>
+          <Link
+            href={`/listings/${property.plotNumber}`}
+            className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-brand-blue-pale dark:bg-brand-blue/20 text-brand-blue dark:text-brand-blue-light hover:bg-brand-blue hover:text-white transition-colors duration-200"
+          >
+            <ArrowUpRight className="h-3.5 w-3.5" />
+          </Link>
         </div>
       </div>
     </motion.div>

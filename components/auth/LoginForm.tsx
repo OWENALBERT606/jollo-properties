@@ -55,7 +55,7 @@ export default function LoginForm() {
     <div className="min-h-screen flex">
 
       {/* ── LEFT — form ── */}
-      <div className="flex-1 flex items-center justify-center bg-white px-6 py-12">
+      <div className="flex-1 flex items-center justify-center bg-white dark:bg-gray-900 px-6 py-12">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
@@ -74,10 +74,10 @@ export default function LoginForm() {
 
           {/* Heading */}
           <div className="mb-8">
-            <h1 className="text-4xl font-extrabold text-gray-900 leading-tight">
+            <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white leading-tight">
               Welcome back.
             </h1>
-            <p className="text-gray-500 text-sm mt-2">
+            <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">
               Sign in to access your property dashboard.
             </p>
           </div>
@@ -86,7 +86,7 @@ export default function LoginForm() {
           <div className="space-y-5">
             {/* Email */}
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-xs font-bold uppercase tracking-widest text-gray-500">
+              <Label htmlFor="email" className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
                 Email Address
               </Label>
               <Input
@@ -94,7 +94,7 @@ export default function LoginForm() {
                 type="email"
                 placeholder="john@example.com"
                 {...register("email")}
-                className={`h-12 rounded-xl text-sm bg-gray-50 border ${errors.email ? "border-brand-red" : "border-gray-200"} focus-visible:ring-2 focus-visible:ring-brand-blue/30 focus-visible:border-brand-blue`}
+                className={`h-12 rounded-xl text-sm bg-gray-50 dark:bg-gray-800 border ${errors.email ? "border-brand-red" : "border-gray-200 dark:border-gray-700"} focus-visible:ring-2 focus-visible:ring-brand-blue/30 focus-visible:border-brand-blue text-gray-900 dark:text-gray-100`}
               />
               {errors.email && <p className="text-xs text-brand-red">{errors.email.message}</p>}
             </div>
@@ -102,7 +102,7 @@ export default function LoginForm() {
             {/* Password */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-xs font-bold uppercase tracking-widest text-gray-500">
+                <Label htmlFor="password" className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">
                   Password
                 </Label>
                 <Link href="/forgot-password" className="text-xs text-brand-blue font-semibold hover:text-brand-red transition-colors">
@@ -115,12 +115,12 @@ export default function LoginForm() {
                   type={showPass ? "text" : "password"}
                   placeholder="••••••••"
                   {...register("password")}
-                  className={`h-12 rounded-xl text-sm bg-gray-50 border pr-10 ${errors.password ? "border-brand-red" : "border-gray-200"} focus-visible:ring-2 focus-visible:ring-brand-blue/30 focus-visible:border-brand-blue`}
+                  className={`h-12 rounded-xl text-sm bg-gray-50 dark:bg-gray-800 border pr-10 ${errors.password ? "border-brand-red" : "border-gray-200 dark:border-gray-700"} focus-visible:ring-2 focus-visible:ring-brand-blue/30 focus-visible:border-brand-blue text-gray-900 dark:text-gray-100`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPass(v => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-blue transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-brand-blue transition-colors"
                 >
                   {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -150,12 +150,12 @@ export default function LoginForm() {
           </div>
 
           <div className="flex items-center gap-3 my-6">
-            <div className="flex-1 h-px bg-gray-100" />
-            <span className="text-xs text-gray-400 uppercase tracking-widest">or</span>
-            <div className="flex-1 h-px bg-gray-100" />
+            <div className="flex-1 h-px bg-gray-100 dark:bg-gray-700" />
+            <span className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-widest">or</span>
+            <div className="flex-1 h-px bg-gray-100 dark:bg-gray-700" />
           </div>
 
-          <p className="text-center text-sm text-gray-500">
+          <p className="text-center text-sm text-gray-500 dark:text-gray-400">
             Don&apos;t have an account?{" "}
             <Link href="/register" className="text-brand-blue font-bold hover:text-brand-red transition-colors">
               Register →

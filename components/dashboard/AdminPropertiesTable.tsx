@@ -2,10 +2,9 @@
 
 import { useState, useMemo } from "react";
 import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, flexRender, ColumnDef } from "@tanstack/react-table";
-import { Search, Eye, Star, Globe, Trash2, Plus } from "lucide-react";
+import { Search, Eye, Trash2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -66,13 +65,6 @@ export default function AdminPropertiesTable({ initialProperties, officerId }: {
     finally { setLoading(false); setStatusTarget(null); }
   }
 
-  async function handleToggle(id: string, field: "isFeatured" | "isPublicListing", current: boolean) {
-    try {
-      await updateProperty(id, { [field]: !current });
-      toast.success(`${field === "isFeatured" ? "Featured" : "Public listing"} ${!current ? "enabled" : "disabled"}`);
-    } catch (err: any) { toast.error(err.message); }
-  }
-
   async function handleDelete() {
     if (!deleteTarget) return;
     setLoading(true);
@@ -118,33 +110,16 @@ export default function AdminPropertiesTable({ initialProperties, officerId }: {
       ? <span className="text-sm font-medium">UGX {Number(row.original.price).toLocaleString()}</span>
       : <span className="text-gray-300 text-sm">—</span>
     },
-    { id: "featured", header: "Featured", cell: ({ row }) => (
-      <button onClick={() => handleToggle(row.original.id, "isFeatured", row.original.isFeatured)}
-        className={`text-xs font-semibold px-2 py-1 rounded-full transition-colors ${row.original.isFeatured ? "bg-yellow-100 text-yellow-700" : "bg-gray-100 text-gray-400 hover:bg-yellow-50"}`}>
-        <Star className={`h-3.5 w-3.5 inline mr-1 ${row.original.isFeatured ? "fill-yellow-500" : ""}`} />
-        {row.original.isFeatured ? "Yes" : "No"}
-      </button>
-    )},
-    { id: "public", header: "Public", cell: ({ row }) => (
-      <button onClick={() => handleToggle(row.original.id, "isPublicListing", row.original.isPublicListing)}
-        className={`text-xs font-semibold px-2 py-1 rounded-full transition-colors ${row.original.isPublicListing ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-400 hover:bg-green-50"}`}>
-        <Globe className={`h-3.5 w-3.5 inline mr-1`} />
-        {row.original.isPublicListing ? "Yes" : "No"}
-      </button>
-    )},
-    { id: "owners", header: "Owners", cell: ({ row }) => (
-      <span className="text-xs text-gray-500">{row.original.owners?.map((o: any) => o.user.name).join(", ") || "—"}</span>
-    )},
     { accessorKey: "createdAt", header: "Registered", cell: ({ row }) => (
       <span className="text-xs text-gray-400">{formatDistanceToNow(new Date(row.original.createdAt), { addSuffix: true })}</span>
     )},
-    { id: "actions", header: "", cell: ({ row }) => (
-      <div className="flex gap-1">
-        <Button size="icon" variant="ghost" className="h-7 w-7 text-brand-blue" onClick={() => setDetailProp(row.original)}>
-          <Eye className="h-3.5 w-3.5" />
+    { id: "actions", header: "Actions", cell: ({ row }) => (
+      <div className="flex gap-2">
+        <Button size="sm" variant="outline" className="h-8 text-xs text-brand-blue border-brand-blue hover:bg-blue-50 gap-1.5" onClick={() => setDetailProp(row.original)}>
+          <Eye className="h-3.5 w-3.5" /> View Details
         </Button>
-        <Button size="icon" variant="ghost" className="h-7 w-7 text-brand-red hover:bg-red-50" onClick={() => setDeleteTarget(row.original)}>
-          <Trash2 className="h-3.5 w-3.5" />
+        <Button size="sm" variant="outline" className="h-8 text-xs text-brand-red border-red-300 hover:bg-red-50 gap-1.5" onClick={() => setDeleteTarget(row.original)}>
+          <Trash2 className="h-3.5 w-3.5" /> Delete
         </Button>
       </div>
     )},

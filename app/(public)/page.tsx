@@ -9,6 +9,8 @@ import NewsletterSection from "@/components/public/NewsletterSection";
 import FAQSection from "@/components/public/FAQSection";
 import CTASection from "@/components/public/CTASection";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Demo Properties — Uganda Real Estate & Land Registry",
   description:

@@ -3,7 +3,7 @@ import HomeMapClient from "./HomeMapClient";
 
 async function getMapProperties() {
   try {
-    return await db.property.findMany({
+    const rows = await db.property.findMany({
       where: {
         isPublicListing: true,
         latitude: { not: null },
@@ -25,8 +25,10 @@ async function getMapProperties() {
         status: true,
       },
     });
-    return properties.map((p: any) => ({ ...p, price: Number(p.price), size: Number(p.size) }));
-  } catch {
+    // Convert Prisma Decimal → number for React serialization
+    return rows.map((p) => ({ ...p, price: p.price ? Number(p.price) : null, size: Number(p.size) }));
+  } catch (err) {
+    console.error("[HomeMapSection] failed to load properties:", err);
     return [];
   }
 }

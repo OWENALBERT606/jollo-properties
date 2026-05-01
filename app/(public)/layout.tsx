@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/public/Navbar";
 import Footer from "@/components/public/Footer";
+import ChatWidget from "@/components/chat/ChatWidget";
 
 export const metadata: Metadata = {
   title: {
@@ -17,6 +18,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       <Navbar />
       <main className="flex-1 pt-16">{children}</main>
       <Footer />
+      <ChatWidget />
     </div>
   );
 }
