@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { MapPin, Maximize2, Tag, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 import type { ListingProperty } from "@/types/types";
 
 const tenureBadge: Record<string, string> = {
@@ -32,6 +33,8 @@ interface Props {
 }
 
 export default function PropertyCard({ property, index = 0, isFeatured }: Props) {
+  const photo = property.documents?.[0]?.r2Url;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -49,20 +52,29 @@ export default function PropertyCard({ property, index = 0, isFeatured }: Props)
       {/* Image area */}
       <Link href={`/listings/${property.plotNumber}`}>
         <div className="relative h-56 overflow-hidden">
-          {/* Abstract geometric placeholder */}
-          <div className="absolute inset-0 bg-gradient-to-br from-brand-blue-pale dark:from-brand-blue/20 via-blue-100 dark:via-gray-800 to-brand-blue/20 dark:to-brand-blue/10">
-            {/* Geometric decoration layers */}
-            <div className="absolute inset-0 opacity-20">
-              <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-brand-blue/40 dark:bg-brand-blue/60" />
-              <div className="absolute bottom-0 -left-6 w-32 h-32 rounded-full bg-brand-blue-light/30 dark:bg-brand-blue-light/40" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rotate-45 bg-brand-blue/20 dark:bg-brand-blue/30" />
+          {photo ? (
+            <Image
+              src={photo}
+              alt={property.title}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            />
+          ) : (
+            /* Abstract geometric placeholder */
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-blue-pale dark:from-brand-blue/20 via-blue-100 dark:via-gray-800 to-brand-blue/20 dark:to-brand-blue/10">
+              <div className="absolute inset-0 opacity-20">
+                <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-brand-blue/40 dark:bg-brand-blue/60" />
+                <div className="absolute bottom-0 -left-6 w-32 h-32 rounded-full bg-brand-blue-light/30 dark:bg-brand-blue-light/40" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rotate-45 bg-brand-blue/20 dark:bg-brand-blue/30" />
+              </div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-brand-blue/15 dark:text-brand-blue/35 text-9xl font-black select-none group-hover:scale-110 transition-transform duration-500 leading-none">
+                  {property.district[0]}
+                </span>
+              </div>
             </div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-brand-blue/15 dark:text-brand-blue/35 text-9xl font-black select-none group-hover:scale-110 transition-transform duration-500 leading-none">
-                {property.district[0]}
-              </span>
-            </div>
-          </div>
+          )}
 
           {/* Hover overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-brand-blue/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
