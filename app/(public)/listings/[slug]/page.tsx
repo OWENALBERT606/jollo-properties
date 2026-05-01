@@ -16,6 +16,8 @@ import PropertyMap from "@/components/shared/PropertyMap";
 
 export const dynamic = "force-dynamic";
 
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://jollo-properties.vercel.app";
+
 export async function generateMetadata({
   params,
 }: {
@@ -26,22 +28,35 @@ export async function generateMetadata({
     const property = await db.property.findUnique({
       where: { plotNumber: slug },
     });
-    if (!property) return { title: "Property Not Found | Demo Properties" };
+    if (!property) return { title: "Property Not Found | Jollo Properties" };
+
+    const title = `${property.title} — ${property.district} | Jollo Properties`;
+    const description =
+      property.description ||
+      `${property.tenure} ${property.type.toLowerCase()} property in ${property.district}, Uganda. ${Number(property.size)} ${property.sizeUnit}. Plot No: ${property.plotNumber}.`;
+
     return {
-      title: `${property.title} — ${property.district} | Demo Properties`,
-      description:
-        property.description ||
-        `${property.tenure} property in ${property.district}. ${Number(property.size)} ${property.sizeUnit}.`,
+      title,
+      description,
+      alternates: {
+        canonical: `${BASE_URL}/listings/${slug}`,
+      },
       openGraph: {
-        title: `${property.title} | Demo Properties`,
-        description:
-          property.description ||
-          `${property.tenure} property in ${property.district}`,
+        title: `${property.title} | Jollo Properties`,
+        description,
         type: "website",
+        url: `${BASE_URL}/listings/${slug}`,
+        images: [{ url: "/og-image.png", width: 1200, height: 630, alt: property.title }],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${property.title} | Jollo Properties`,
+        description,
+        images: ["/og-image.png"],
       },
     };
   } catch {
-    return { title: "Property | Demo Properties" };
+    return { title: "Property | Jollo Properties" };
   }
 }
 
@@ -110,8 +125,51 @@ export default async function PropertyDetailPage({
   const otherDocs = property.documents.filter((d: any) => d.type !== "PHOTO");
   const latestValuation = property.valuations?.[0];
 
+  const propertyJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateListing",
+    name: property.title,
+    description:
+      property.description ||
+      `${property.tenure} ${property.type.toLowerCase()} property in ${property.district}, Uganda.`,
+    url: `${BASE_URL}/listings/${property.plotNumber}`,
+    image: photos[0]?.r2Url || `${BASE_URL}/og-image.png`,
+    ...(property.price && {
+      offers: {
+        "@type": "Offer",
+        price: Number(property.price),
+        priceCurrency: "UGX",
+        availability: "https://schema.org/InStock",
+      },
+    }),
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: property.address || property.village || "",
+      addressLocality: property.district,
+      addressRegion: property.county || property.district,
+      addressCountry: "UG",
+    },
+    ...(property.latitude &&
+      property.longitude && {
+        geo: {
+          "@type": "GeoCoordinates",
+          latitude: property.latitude,
+          longitude: property.longitude,
+        },
+      }),
+    floorSize: {
+      "@type": "QuantitativeValue",
+      value: Number(property.size),
+      unitText: property.sizeUnit,
+    },
+  };
+
   return (
     <div className="bg-gray-50 min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(propertyJsonLd) }}
+      />
       {/* Breadcrumb */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-2 text-sm text-gray-500">

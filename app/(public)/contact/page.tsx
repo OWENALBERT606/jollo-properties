@@ -3,9 +3,25 @@ import { MapPin, Phone, Mail, Clock } from "lucide-react";
 import OfficeMapClient from "@/components/public/OfficeMapClient";
 
 export const metadata: Metadata = {
-  title: "Contact Us | Demo Properties",
-  description: "Get in touch with Demo Properties at Kireka Shopping Centre, Kampala.",
-  openGraph: { title: "Contact Demo Properties", description: "Get in touch with our team." },
+  title: "Contact Us | Jollo Properties",
+  description:
+    "Get in touch with Jollo Properties. Visit us at Kireka Shopping Centre, Kampala, Uganda or send us a message online.",
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || "https://jollo-properties.vercel.app"}/contact`,
+  },
+  openGraph: {
+    title: "Contact Jollo Properties — Kampala, Uganda",
+    description:
+      "Get in touch with Jollo Properties. Visit us at Kireka Shopping Centre, Kampala, Uganda or send us a message online.",
+    type: "website",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Contact Jollo Properties" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Contact Jollo Properties",
+    description: "Get in touch with our team at Kireka Shopping Centre, Kampala.",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function ContactPage() {

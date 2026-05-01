@@ -11,24 +11,96 @@ import CTASection from "@/components/public/CTASection";
 
 export const dynamic = "force-dynamic";
 
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://jollo-properties.vercel.app";
+
 export const metadata: Metadata = {
-  title: "Demo Properties — Uganda Real Estate & Land Registry",
+  title: "Jollo Properties — Uganda Real Estate & Land Registry",
   description:
-    "Find titled, mailo, and kibanja properties across Uganda. GIS-verified, secure, and transparent land registry platform.",
+    "Find titled, mailo, freehold, and kibanja properties across Uganda. GIS-verified, secure, and transparent land registry platform. Browse plots, houses, and commercial properties.",
+  alternates: {
+    canonical: BASE_URL,
+  },
   openGraph: {
-    title: "Demo Properties — Uganda Real Estate & Land Registry",
-    description: "Browse properties across Uganda. Secure land registry platform.",
+    title: "Jollo Properties — Uganda Real Estate & Land Registry",
+    description:
+      "Find titled, mailo, freehold, and kibanja properties across Uganda. GIS-verified, secure, and transparent land registry platform.",
     type: "website",
+    url: BASE_URL,
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Jollo Properties — Uganda Real Estate & Land Registry",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Jollo Properties — Uganda Real Estate & Land Registry",
+    description:
+      "Find titled, mailo, freehold, and kibanja properties across Uganda. GIS-verified, secure, and transparent land registry platform.",
+    images: ["/og-image.png"],
+  },
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "RealEstateAgent",
+  name: "Jollo Properties",
+  url: BASE_URL,
+  logo: `${BASE_URL}/android-chrome-512x512.png`,
+  description:
+    "Uganda's trusted land registry and real estate platform. Find titled, mailo, freehold, and kibanja properties across Uganda.",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "Kireka Shopping Centre",
+    addressLocality: "Kampala",
+    addressCountry: "UG",
+  },
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: "+256-700-000-000",
+    contactType: "customer service",
+    availableLanguage: ["English"],
+  },
+  sameAs: [],
+  areaServed: {
+    "@type": "Country",
+    name: "Uganda",
+  },
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Jollo Properties",
+  url: BASE_URL,
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${BASE_URL}/listings?q={search_term_string}`,
+    },
+    "query-input": "required name=search_term_string",
   },
 };
 
 export default function HomePage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+      />
       <HeroSection />
       <HomeMapSection />
       <FeaturedListings />
-       <StatsBar />
+      <StatsBar />
       <WhySection />
       <ContactSection />
       <NewsletterSection />

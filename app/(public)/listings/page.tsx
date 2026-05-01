@@ -4,11 +4,24 @@ import { PropertyType, PropertyTenure } from "@prisma/client";
 import ListingsClient from "./ListingsClient";
 
 export const metadata: Metadata = {
-  title: "Browse Listings | Demo Properties",
-  description: "Search and filter properties across Uganda by district, tenure, type and price.",
+  title: "Property Listings in Uganda | Jollo Properties",
+  description:
+    "Browse and filter properties across Uganda — titled, mailo, freehold, kibanja, and leasehold land. Search by district, type, tenure, and price.",
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || "https://jollo-properties.vercel.app"}/listings`,
+  },
   openGraph: {
-    title: "Browse Listings | Demo Properties",
-    description: "Find your perfect property in Uganda.",
+    title: "Property Listings in Uganda | Jollo Properties",
+    description:
+      "Browse and filter properties across Uganda — titled, mailo, freehold, kibanja, and leasehold land. Search by district, type, tenure, and price.",
+    type: "website",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Uganda Property Listings" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Property Listings in Uganda | Jollo Properties",
+    description: "Browse and filter properties across Uganda by district, tenure, type and price.",
+    images: ["/og-image.png"],
   },
 };
 

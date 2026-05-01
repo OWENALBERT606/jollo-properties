@@ -1,11 +1,22 @@
 import { MetadataRoute } from "next";
 
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://jollo-properties.vercel.app";
+
 export default function robots(): MetadataRoute.Robots {
-  const base = process.env.NEXTAUTH_URL || "http://localhost:3000";
   return {
     rules: [
-      { userAgent: "*", allow: "/", disallow: ["/dashboard/", "/api/"] },
+      {
+        userAgent: "*",
+        allow: ["/", "/listings", "/about", "/contact"],
+        disallow: [
+          "/dashboard/",
+          "/api/",
+          "/admin/",
+          "/(auth)/",
+        ],
+      },
     ],
-    sitemap: `${base}/sitemap.xml`,
+    sitemap: `${BASE_URL}/sitemap.xml`,
+    host: BASE_URL,
   };
 }

@@ -4,11 +4,24 @@ import { Building2, Shield, MapPin, Users, Zap, TrendingUp, Award, Heart } from 
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "About Us | Demo Properties",
-  description: "Learn about Demo Properties — Uganda's trusted land registry and real estate platform.",
+  title: "About Us | Jollo Properties",
+  description:
+    "Learn about Jollo Properties — Uganda's trusted land registry and real estate platform. GIS-verified properties, transparent transactions, and secure ownership.",
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_SITE_URL || "https://jollo-properties.vercel.app"}/about`,
+  },
   openGraph: {
-    title: "About Demo Properties",
-    description: "Uganda's trusted land registry platform.",
+    title: "About Jollo Properties — Uganda's Trusted Land Registry",
+    description:
+      "Uganda's trusted land registry and real estate platform. GIS-verified properties, transparent transactions, and secure ownership.",
+    type: "website",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "About Jollo Properties" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Jollo Properties",
+    description: "Uganda's trusted land registry and real estate platform.",
+    images: ["/og-image.png"],
   },
 };
 

@@ -5,11 +5,11 @@ import ChatWidget from "@/components/chat/ChatWidget";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Demo Properties",
-    default: "Demo Properties — Uganda Real Estate & Land Registry",
+    template: "%s | Jollo Properties",
+    default: "Jollo Properties — Uganda Real Estate & Land Registry",
   },
   description:
-    "Find titled, mailo, and kibanja properties across Uganda. Secure land registry and real estate platform.",
+    "Find titled, mailo, freehold, and kibanja properties across Uganda. GIS-verified, secure, and transparent land registry and real estate platform.",
 };
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
