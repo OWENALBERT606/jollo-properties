@@ -4,12 +4,12 @@ import { authOptions } from "@/config/auth";
 import { requireOfficer } from "@/lib/auth-guard";
 import { db } from "@/prisma/db";
 
-export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const item = await db.propertyOwner.findUnique({
-    where: { id: params.id },
+    where: { id: (await params).id },
     include: {
       property: { select: { id: true, plotNumber: true, title: true } },
       user: { select: { id: true, name: true, email: true, phone: true } },
@@ -19,7 +19,7 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
   return NextResponse.json(item);
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   const guard = requireOfficer(session);
   if (guard) return guard;
@@ -30,7 +30,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     // Handle primary switch
     if (body.isPrimary === true) {
-      const current = await db.propertyOwner.findUnique({ where: { id: params.id } });
+      const current = await db.propertyOwner.findUnique({ where: { id: (await params).id } });
       if (current) {
         await db.propertyOwner.updateMany({
           where: { propertyId: current.propertyId, isActive: true },
@@ -48,7 +48,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       if (!body.isActive) updateData.endDate = new Date();
     }
 
-    const item = await db.propertyOwner.update({ where: { id: params.id }, data: updateData });
+    const item = await db.propertyOwner.update({ where: { id: (await params).id }, data: updateData });
     return NextResponse.json(item);
   } catch (err: any) {
     if (err.code === "P2025") return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -56,7 +56,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   const guard = requireOfficer(session);
   if (guard) return guard;
@@ -64,7 +64,7 @@ export async function DELETE(_: NextRequest, { params }: { params: { id: string 
   try {
     // Soft delete
     const item = await db.propertyOwner.update({
-      where: { id: params.id },
+      where: { id: (await params).id },
       data: { isActive: false, endDate: new Date() },
     });
     return NextResponse.json(item);

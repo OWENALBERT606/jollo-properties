@@ -56,15 +56,6 @@ Please contact me.`;
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(visitMessage)}`, "_blank");
   }
 
-  function handleCall() {
-    window.location.href = `tel:+${CONTACT_PHONE}`;
-  }
-
-  function handleBookVisit() {
-    const message = `Hi, I would like to book a visit to ${title} (${plotNumber}).`;
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
-  }
-
   return (
     <div className="space-y-2">
       <button

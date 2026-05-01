@@ -10,7 +10,7 @@ import {
   PlusSquare, ArrowLeftRight, Scale, AlertTriangle, UserCheck,
   Home, FolderOpen, ChevronLeft, ChevronRight, LogOut, User,
   Map, Tag, Landmark, MapPin, Globe, ChevronDown, ChevronUp,
-  FileText, Road,
+  FileText, Route,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";

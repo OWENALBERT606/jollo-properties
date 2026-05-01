@@ -4,12 +4,12 @@ import { authOptions } from "@/config/auth";
 import { requireOfficer } from "@/lib/auth-guard";
 import { db } from "@/prisma/db";
 
-export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const item = await db.workflowStep.findUnique({
-    where: { id: params.id },
+    where: { id: (await params).id },
     include: {
       property: { select: { id: true, plotNumber: true, title: true, district: true } },
       transaction: { select: { id: true, type: true, status: true, property: { select: { title: true } } } },
@@ -20,13 +20,13 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
   return NextResponse.json(item);
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
     const body = await req.json();
-    const current = await db.workflowStep.findUnique({ where: { id: params.id } });
+    const current = await db.workflowStep.findUnique({ where: { id: (await params).id } });
     if (!current) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
     const updateData: any = {};
@@ -44,7 +44,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     if (body.assigneeId) updateData.assigneeId = body.assigneeId;
     if (body.notes !== undefined) updateData.notes = body.notes;
 
-    const item = await db.workflowStep.update({ where: { id: params.id }, data: updateData });
+    const item = await db.workflowStep.update({ where: { id: (await params).id }, data: updateData });
     return NextResponse.json(item);
   } catch (err: any) {
     if (err.code === "P2025") return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -52,13 +52,13 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   const guard = requireOfficer(session);
   if (guard) return guard;
 
   try {
-    const step = await db.workflowStep.findUnique({ where: { id: params.id } });
+    const step = await db.workflowStep.findUnique({ where: { id: (await params).id } });
     if (!step) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
     // Only delete if still pending
@@ -66,7 +66,7 @@ export async function DELETE(_: NextRequest, { params }: { params: { id: string 
       return NextResponse.json({ error: "Cannot delete: step already completed" }, { status: 400 });
     }
 
-    await db.workflowStep.delete({ where: { id: params.id } });
+    await db.workflowStep.delete({ where: { id: (await params).id } });
     return NextResponse.json({ success: true });
   } catch (err: any) {
     if (err.code === "P2025") return NextResponse.json({ error: "Not found" }, { status: 404 });

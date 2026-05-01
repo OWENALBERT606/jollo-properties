@@ -9,7 +9,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { format } from "date-fns";
 import PropertyImageGallery from "@/components/public/PropertyImageGallery";
 import PropertyContactCard from "@/components/public/PropertyContactCard";

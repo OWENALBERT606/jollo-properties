@@ -13,12 +13,12 @@ const statusFlow: Record<string, string[]> = {
   CANCELLED: [],
 };
 
-export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const item = await db.transaction.findUnique({
-    where: { id: params.id },
+    where: { id: (await params).id },
     include: {
       property: { select: { id: true, plotNumber: true, title: true, district: true, size: true, sizeUnit: true, tenure: true } },
       initiatedBy: { select: { id: true, name: true, email: true } },
@@ -31,14 +31,14 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
   return NextResponse.json(item);
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   const guard = requireOfficer(session);
   if (guard) return guard;
 
   try {
     const body = await req.json();
-    const current = await db.transaction.findUnique({ where: { id: params.id } });
+    const current = await db.transaction.findUnique({ where: { id: (await params).id } });
     if (!current) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
     const updateData: any = {};
@@ -61,7 +61,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     if (body.agreementDate) updateData.agreementDate = new Date(body.agreementDate);
     if (body.notes !== undefined) updateData.notes = body.notes;
 
-    const item = await db.transaction.update({ where: { id: params.id }, data: updateData });
+    const item = await db.transaction.update({ where: { id: (await params).id }, data: updateData });
     return NextResponse.json(item);
   } catch (err: any) {
     if (err.code === "P2025") return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -69,7 +69,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   const guard = requireOfficer(session);
   if (guard) return guard;
@@ -77,7 +77,7 @@ export async function DELETE(_: NextRequest, { params }: { params: { id: string 
   try {
     // Only allow cancellation (not hard delete)
     const item = await db.transaction.update({
-      where: { id: params.id },
+      where: { id: (await params).id },
       data: { status: "CANCELLED" },
     });
     return NextResponse.json(item);

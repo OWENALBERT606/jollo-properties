@@ -4,12 +4,12 @@ import { authOptions } from "@/config/auth";
 import { requireAdmin, requireOfficer } from "@/lib/auth-guard";
 import { db } from "@/prisma/db";
 
-export async function GET(_: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const item = await db.property.findUnique({
-    where: { id: params.id },
+    where: { id: (await params).id },
     include: {
       owners: { include: { user: { select: { id: true, name: true, email: true, phone: true } } } },
       documents: { orderBy: { createdAt: "desc" } },
@@ -22,7 +22,7 @@ export async function GET(_: NextRequest, { params }: { params: { id: string } }
   return NextResponse.json(item);
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   const guard = requireOfficer(session);
   if (guard) return guard;
@@ -50,7 +50,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     if (body.isFeatured !== undefined) updateData.isFeatured = body.isFeatured;
     if (body.isPublicListing !== undefined) updateData.isPublicListing = body.isPublicListing;
 
-    const item = await db.property.update({ where: { id: params.id }, data: updateData });
+    const item = await db.property.update({ where: { id: (await params).id }, data: updateData });
     return NextResponse.json(item);
   } catch (err: any) {
     if (err.code === "P2025") return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -58,14 +58,14 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 }
 
-export async function DELETE(_: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   const guard = requireAdmin(session);
   if (guard) return guard;
 
   try {
     // Soft delete - archive the property
-    const item = await db.property.update({ where: { id: params.id }, data: { status: "ARCHIVED" } });
+    const item = await db.property.update({ where: { id: (await params).id }, data: { status: "ARCHIVED" } });
     return NextResponse.json(item);
   } catch (err: any) {
     if (err.code === "P2025") return NextResponse.json({ error: "Not found" }, { status: 404 });
