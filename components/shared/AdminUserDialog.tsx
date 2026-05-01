@@ -35,7 +35,7 @@ export default function AdminUserDialog({ open, onClose, user, onSaved }: Props)
   async function onSubmit(data: FormData) {
     setLoading(true);
     try {
-      const url = user ? `/api/users/${user.id}` : "/api/auth/register";
+      const url = user ? `/api/admin/users/${user.id}` : "/api/admin/users";
       const method = user ? "PATCH" : "POST";
       const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
       const json = await res.json();

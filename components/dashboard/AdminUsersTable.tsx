@@ -30,7 +30,7 @@ export default function AdminUsersTable({ initialUsers }: { initialUsers: any[] 
     { accessorKey: "email", header: "Email", cell: ({ row }) => <span className="text-gray-500 text-sm">{row.original.email}</span> },
     { accessorKey: "role", header: "Role", cell: ({ row }) => (
       <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${roleBadge[row.original.role] || "bg-gray-100"}`}>
-        {row.original.role.replace("_", " ")}
+        {(row.original.role || "").replace("_", " ")}
       </span>
     )},
     { accessorKey: "nin", header: "NIN", cell: ({ row }) => row.original.nin ? (

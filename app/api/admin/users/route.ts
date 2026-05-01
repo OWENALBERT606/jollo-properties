@@ -47,7 +47,11 @@ export async function POST(req: NextRequest) {
         passwordHash,
       },
     });
-    return NextResponse.json({ id: item.id, email: item.email, name: item.name, role: item.role }, { status: 201 });
+    return NextResponse.json({
+      id: item.id, email: item.email, name: item.name, phone: item.phone,
+      nin: item.nin, ninVerified: item.ninVerified, role: item.role,
+      image: item.image, createdAt: item.createdAt, _count: { ownerships: 0 },
+    }, { status: 201 });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
