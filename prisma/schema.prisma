@@ -234,12 +234,32 @@ model Transaction {
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
 
+  agreedPrice     Decimal?          @db.Decimal(15, 2)
+  discountLabel   String?
+  discountAmount  Decimal?          @db.Decimal(15, 2)
+  installments    PaymentInstallment[]
+
   property    Property       @relation(fields: [propertyId], references: [id])
   initiatedBy User           @relation("InitiatedTransactions", fields: [initiatedById], references: [id])
   buyer       User?          @relation("BuyerTransactions", fields: [buyerId], references: [id])
   seller      User?          @relation("SellerTransactions", fields: [sellerId], references: [id])
   workflowSteps WorkflowStep[]
   auditLogs   AuditLog[]
+}
+
+// ─── PaymentInstallment ───────────────────────────────────────────────────────
+
+model PaymentInstallment {
+  id            String   @id @default(cuid())
+  transactionId String
+  amount        Decimal  @db.Decimal(15, 2)
+  receiptNumber String   @unique @default(cuid())
+  paidAt        DateTime @default(now())
+  method        String   @default("CASH")
+  notes         String?
+  createdAt     DateTime @default(now())
+
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
 }
 
 // ─── Valuation ────────────────────────────────────────────────────────────────

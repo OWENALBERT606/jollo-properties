@@ -1,14 +1,14 @@
 "use client";
-
 import { useState, useMemo } from "react";
 import { useReactTable, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, flexRender, ColumnDef } from "@tanstack/react-table";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 import TransactionDialog from "@/components/shared/TransactionDialog";
 import TransactionDetailSheet from "@/components/shared/TransactionDetailSheet";
+import PaymentInstallmentDialog from "@/components/shared/PaymentInstallmentDialog";
 
 const statusColors: Record<string, string> = {
   INITIATED: "bg-blue-100 text-blue-700",
@@ -19,11 +19,31 @@ const statusColors: Record<string, string> = {
   CANCELLED: "bg-gray-100 text-gray-600",
 };
 
+function PaymentProgress({ tx }: { tx: any }) {
+  const agreed = Number(tx.amount) || 0;
+  const paid = (tx.installments || []).reduce((s: number, i: any) => s + Number(i.amount), 0);
+  if (agreed === 0) return <span className="text-gray-300 text-sm">—</span>;
+  const pct = Math.min(100, Math.round((paid / agreed) * 100));
+  return (
+    <div className="min-w-[120px]">
+      <div className="flex justify-between text-xs mb-1">
+        <span className="font-medium">UGX {agreed.toLocaleString()}</span>
+        <span className="text-gray-400">{pct}%</span>
+      </div>
+      <div className="w-full bg-gray-100 rounded-full h-1.5">
+        <div className="bg-brand-blue rounded-full h-1.5" style={{ width: `${pct}%` }} />
+      </div>
+      <div className="text-xs text-gray-400 mt-0.5">UGX {paid.toLocaleString()} paid</div>
+    </div>
+  );
+}
+
 export default function TransactionsTable({ initialTransactions, officerId }: { initialTransactions: any[]; officerId: string }) {
   const [transactions, setTransactions] = useState(initialTransactions);
   const [globalFilter, setGlobalFilter] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [detailTx, setDetailTx] = useState<any>(null);
+  const [paymentTx, setPaymentTx] = useState<any>(null);
 
   const columns = useMemo<ColumnDef<any>[]>(() => [
     { accessorKey: "property.title", header: "Property", cell: ({ row }) => (
@@ -38,19 +58,20 @@ export default function TransactionsTable({ initialTransactions, officerId }: { 
         {row.original.status.replace("_", " ")}
       </span>
     )},
-    { accessorKey: "amount", header: "Amount", cell: ({ row }) => row.original.amount
-      ? <span className="font-medium">UGX {Number(row.original.amount).toLocaleString()}</span>
-      : <span className="text-gray-300">—</span>
-    },
-    { accessorKey: "buyer.name", header: "Buyer", cell: ({ row }) => row.original.buyer?.name || "—" },
-    { accessorKey: "seller.name", header: "Seller", cell: ({ row }) => row.original.seller?.name || "—" },
+    { accessorKey: "amount", header: "Amount / Payments", cell: ({ row }) => <PaymentProgress tx={row.original} /> },
+    { accessorKey: "buyer.name", header: "Buyer", cell: ({ row }) => <span className="text-sm">{row.original.buyer?.name || "—"}</span> },
     { accessorKey: "createdAt", header: "Date", cell: ({ row }) => (
       <span className="text-sm text-gray-400">{formatDistanceToNow(new Date(row.original.createdAt), { addSuffix: true })}</span>
     )},
     { id: "actions", header: "", cell: ({ row }) => (
-      <Button size="sm" variant="ghost" className="text-brand-blue text-xs" onClick={() => setDetailTx(row.original)}>
-        View
-      </Button>
+      <div className="flex gap-1">
+        {row.original.type === "SALE" && row.original.status !== "COMPLETED" && row.original.status !== "CANCELLED" && (
+          <Button size="sm" variant="outline" className="h-7 text-xs text-green-600 border-green-200" onClick={() => setPaymentTx(row.original)}>
+            <CreditCard className="h-3 w-3 mr-1" /> Pay
+          </Button>
+        )}
+        <Button size="sm" variant="ghost" className="h-7 text-xs text-brand-blue" onClick={() => setDetailTx(row.original)}>View</Button>
+      </div>
     )},
   ], []);
 
@@ -64,6 +85,26 @@ export default function TransactionsTable({ initialTransactions, officerId }: { 
     getSortedRowModel: getSortedRowModel(),
     initialState: { pagination: { pageSize: 10 } },
   });
+
+  function handlePaymentSaved(result: any) {
+    setTransactions((prev) => prev.map((t) => {
+      if (t.id !== paymentTx?.id) return t;
+      const newInstallment = result.installment;
+      const updatedTx = { ...t, installments: [...(t.installments || []), newInstallment] };
+      if (result.isFullyPaid) { updatedTx.status = "COMPLETED"; }
+      else if (updatedTx.status === "INITIATED") { updatedTx.status = "UNDER_REVIEW"; }
+      return updatedTx;
+    }));
+    setPaymentTx((prev: any) => {
+      if (!prev) return null;
+      const updated = { ...prev };
+      const newInstallment = result.installment;
+      updated.installments = [...(prev.installments || []), newInstallment];
+      if (result.isFullyPaid) { updated.status = "COMPLETED"; }
+      else if (updated.status === "INITIATED") { updated.status = "UNDER_REVIEW"; }
+      return null; // close dialog
+    });
+  }
 
   return (
     <>
@@ -111,9 +152,19 @@ export default function TransactionsTable({ initialTransactions, officerId }: { 
       </div>
 
       <TransactionDialog open={dialogOpen} onClose={() => setDialogOpen(false)} officerId={officerId}
-        onSaved={(tx) => { setTransactions((p) => [tx, ...p]); setDialogOpen(false); }} />
-      {detailTx && <TransactionDetailSheet tx={detailTx} open={!!detailTx} onClose={() => setDetailTx(null)}
-        onUpdated={(updated) => { setTransactions((p) => p.map((t) => t.id === updated.id ? updated : t)); setDetailTx(updated); }} />}
+        onSaved={(tx) => { setTransactions((p) => [{ ...tx, installments: tx.installments || [] }, ...p]); setDialogOpen(false); }} />
+      {detailTx && (
+        <TransactionDetailSheet tx={detailTx} open={!!detailTx} onClose={() => setDetailTx(null)}
+          onUpdated={(updated) => { setTransactions((p) => p.map((t) => t.id === updated.id ? updated : t)); setDetailTx(updated); }} />
+      )}
+      {paymentTx && (
+        <PaymentInstallmentDialog
+          open={!!paymentTx}
+          onClose={() => setPaymentTx(null)}
+          transaction={paymentTx}
+          onSaved={handlePaymentSaved}
+        />
+      )}
     </>
   );
 }

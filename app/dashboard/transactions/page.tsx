@@ -10,15 +10,23 @@ export default async function TransactionsPage() {
 
   let transactions: any[] = [];
   try {
-    transactions = await db.transaction.findMany({
+    const raw = await db.transaction.findMany({
       include: {
         property: { select: { title: true, plotNumber: true } },
         buyer: { select: { name: true } },
         seller: { select: { name: true } },
         initiatedBy: { select: { name: true } },
+        installments: { orderBy: { paidAt: "asc" } },
       },
       orderBy: { createdAt: "desc" },
     });
+    transactions = raw.map((t: any) => ({
+      ...t,
+      amount: t.amount ? Number(t.amount) : null,
+      agreedPrice: t.agreedPrice ? Number(t.agreedPrice) : null,
+      discountAmount: t.discountAmount ? Number(t.discountAmount) : null,
+      installments: (t.installments || []).map((i: any) => ({ ...i, amount: Number(i.amount) })),
+    }));
   } catch {}
 
   return (

@@ -9,11 +9,30 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const body = await req.json();
-  const { initiatedById, ...data } = body;
+  const { initiatedById, agreedPrice, discountLabel, discountAmount, ...data } = body;
+
+  // Calculate net amount: agreedPrice - discountAmount (or just agreedPrice)
+  const netAmount = agreedPrice
+    ? Number(agreedPrice) - (discountAmount ? Number(discountAmount) : 0)
+    : data.amount
+    ? Number(data.amount)
+    : null;
 
   const tx = await db.transaction.create({
-    data: { ...data, initiatedById: session.user.id, amount: data.amount ? Number(data.amount) : null },
-    include: { property: { select: { title: true, plotNumber: true } }, buyer: { select: { name: true } }, seller: { select: { name: true } }, initiatedBy: { select: { name: true } } },
+    data: {
+      ...data,
+      initiatedById: session.user.id,
+      amount: netAmount,
+      agreedPrice: agreedPrice ? Number(agreedPrice) : null,
+      discountLabel: discountLabel || null,
+      discountAmount: discountAmount ? Number(discountAmount) : null,
+    },
+    include: {
+      property: { select: { title: true, plotNumber: true } },
+      buyer: { select: { name: true } },
+      seller: { select: { name: true } },
+      initiatedBy: { select: { name: true } },
+    },
   });
 
   await db.workflowStep.create({
@@ -24,5 +43,13 @@ export async function POST(req: NextRequest) {
     data: { actorId: session.user.id, action: "CREATE", entityType: "Transaction", entityId: tx.id, transactionId: tx.id, newValue: { type: tx.type, amount: data.amount } },
   });
 
-  return NextResponse.json(tx, { status: 201 });
+  const result = {
+    ...tx,
+    amount: tx.amount ? Number(tx.amount) : null,
+    agreedPrice: (tx as any).agreedPrice ? Number((tx as any).agreedPrice) : null,
+    discountAmount: (tx as any).discountAmount ? Number((tx as any).discountAmount) : null,
+    installments: [],
+  };
+
+  return NextResponse.json(result, { status: 201 });
 }

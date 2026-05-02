@@ -254,4 +254,18 @@ pnpm dev
 
 - **Fix**: Property card images not showing (letter placeholders instead) — `FeaturedListings.tsx` documents `select` was missing `type: true`. `PropertyCardSlider` filters by `d.type === "PHOTO"` but `type` was `undefined` (not fetched), so every property appeared photo-less. Added `type: true` to the select.
 
-*Last updated: 2026-05-01*
+### 2026-05-02
+- **Feature**: Full property sales & payment installment system:
+  - **Schema**: Added `agreedPrice`, `discountLabel`, `discountAmount` fields to `Transaction` model. Added new `PaymentInstallment` model (`id`, `transactionId`, `amount`, `receiptNumber`, `paidAt`, `method`, `notes`). Ran `npx prisma db push` to sync DB.
+  - **API** `app/api/transactions/[id]/payments/route.ts` — GET lists installments; POST records a new payment, hides property from public listing on first payment, auto-completes transaction + sets property status to TRANSFERRED + transfers ownership to buyer when total paid >= amount.
+  - **API** `app/api/transactions/route.ts` — POST now accepts `agreedPrice`, `discountLabel`, `discountAmount`; computes `amount = agreedPrice - discountAmount`; returns `installments: []` in response.
+  - **API** `app/api/admin/properties/route.ts` — GET now accepts `search` param (alias for `q`) and `limit` param; returns `{ data: [...] }` paginated format when `limit` is set; serializes `price`/`size` as numbers.
+  - **Component** `components/shared/TransactionDialog.tsx` — rewritten with property price auto-fill, agreed price field, optional discount section, net amount display.
+  - **Component** `components/shared/PaymentInstallmentDialog.tsx` — new dialog to record installment payments with summary (total price, paid, remaining, progress bar), method select, date, notes.
+  - **Component** `components/dashboard/TransactionsTable.tsx` — rewritten with `PaymentProgress` mini-bar in Amount column, "Pay" button on active SALE transactions, wired to `PaymentInstallmentDialog`.
+  - **Page** `app/dashboard/transactions/page.tsx` — now includes `installments` in DB query with Decimal serialization.
+  - **Component** `components/dashboard/AdminUsersTable.tsx` — added "Delete Permanently" button and confirmation dialog (calls `DELETE /api/admin/users/{id}`).
+  - **Component** `components/dashboard/SalesCharts.tsx` — new client component with Recharts `BarChart` (monthly completed sales last 6 months) + `PieChart` (Active/Partial/Completed breakdown).
+  - **Page** `app/dashboard/admin-home/page.tsx` — added 4 sales stats cards (Completed, Active, Partial, Total Value) + `SalesCharts` component with live DB data.
+
+*Last updated: 2026-05-02*

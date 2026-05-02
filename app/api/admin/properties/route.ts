@@ -14,7 +14,8 @@ export async function GET(req: NextRequest) {
   const tenure = searchParams.get("tenure");
   const district = searchParams.get("district");
   const isFeatured = searchParams.get("isFeatured");
-  const q = searchParams.get("q");
+  const q = searchParams.get("q") || searchParams.get("search");
+  const limit = searchParams.get("limit");
   const cursor = searchParams.get("cursor");
 
   const where: any = {};
@@ -31,18 +32,30 @@ export async function GET(req: NextRequest) {
     ];
   }
 
+  const take = limit ? Number(limit) : 20;
+  const hasCursor = cursor && cursor !== "null";
   const data = await db.property.findMany({
     where,
     orderBy: { createdAt: "desc" },
-    take: 20,
-    ...(cursor ? { cursor: cursor != "null" ? cursor : undefined, skip: 1 } : {}),
+    take,
+    ...(hasCursor ? { cursor: { id: cursor as string }, skip: 1 } : undefined),
     include: {
       owners: { where: { isActive: true }, include: { user: { select: { name: true } } } },
       _count: { select: { documents: true, transactions: true } },
     },
   });
 
-  return NextResponse.json(data);
+  const result = data.map((p: any) => ({
+    ...p,
+    price: p.price ? Number(p.price) : null,
+    size: p.size ? Number(p.size) : null,
+  }));
+
+  // Support both array and paginated response formats
+  if (limit) {
+    return NextResponse.json({ data: result });
+  }
+  return NextResponse.json(result);
 }
 
 export async function POST(req: NextRequest) {

@@ -24,6 +24,7 @@ export default function AdminUsersTable({ initialUsers }: { initialUsers: any[] 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editUser, setEditUser] = useState<any>(null);
   const [deactivateTarget, setDeactivateTarget] = useState<any>(null);
+  const [deleteTarget, setDeleteTarget] = useState<any>(null);
 
   const columns = useMemo<ColumnDef<any>[]>(() => [
     { accessorKey: "name", header: "Name", cell: ({ row }) => <span className="font-medium">{row.original.name}</span> },
@@ -49,6 +50,7 @@ export default function AdminUsersTable({ initialUsers }: { initialUsers: any[] 
       <div className="flex gap-1">
         <Button size="sm" variant="ghost" className="h-7 text-xs text-brand-blue" onClick={() => { setEditUser(row.original); setDialogOpen(true); }}>Edit</Button>
         <Button size="sm" variant="ghost" className="h-7 text-xs text-brand-red" onClick={() => setDeactivateTarget(row.original)}>Deactivate</Button>
+        <Button size="sm" variant="ghost" className="h-7 text-xs text-red-700" onClick={() => setDeleteTarget(row.original)}>Delete</Button>
       </div>
     )},
   ], []);
@@ -71,6 +73,17 @@ export default function AdminUsersTable({ initialUsers }: { initialUsers: any[] 
       return [user, ...prev];
     });
     setDialogOpen(false); setEditUser(null);
+  }
+
+  async function confirmDelete() {
+    if (!deleteTarget) return;
+    try {
+      const res = await fetch(`/api/admin/users/${deleteTarget.id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete");
+      setUsers((p) => p.filter((u) => u.id !== deleteTarget.id));
+      toast.success("User deleted");
+    } catch { toast.error("Failed to delete user"); }
+    finally { setDeleteTarget(null); }
   }
 
   async function confirmDeactivate() {
@@ -141,6 +154,19 @@ export default function AdminUsersTable({ initialUsers }: { initialUsers: any[] 
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeactivateTarget(null)}>Cancel</Button>
             <Button onClick={confirmDeactivate} className="bg-brand-red hover:bg-red-700 text-white">Deactivate</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle>Delete User?</DialogTitle></DialogHeader>
+          <p className="text-sm text-gray-500">
+            This will permanently delete <strong>{deleteTarget?.name}</strong> and all associated records. This action cannot be undone.
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+            <Button onClick={confirmDelete} className="bg-red-700 hover:bg-red-800 text-white">Delete Permanently</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
